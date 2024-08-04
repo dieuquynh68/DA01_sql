@@ -59,9 +59,36 @@ AND description != 'boring'
 ORDER BY movie
 
 ---Bai_tap_10
+SELECT teacher_id,
+COUNT(DISTINCT (subject_id)) AS cnt
+FROM Teacher
+GROUP BY teacher_id
+
+---Bai_tap_11
+SELECT user_id, 
+COUNT(DISTINCT(follower_id)) AS followers_count
+FROM Followers
+GROUP BY user_id
+ORDER BY user_id ASC
+
+---Bai_tap_12
+SELECT class FROM Courses
+GROUP BY class
+HAVING COUNT(student)>=5
 
 
-  ---Bai_tap_7
+
+
+
+
+
+
+
+
+
+
+
+  
 
 
 
