@@ -88,17 +88,40 @@ SELECT ordernumber, priceeach, quantityordered,
 (SELECT stddev(quantityordered)
 	FROM SALES_DATASET_RFM_PRJ) AS stddev
 FROM SALES_DATASET_RFM_PRJ),
-outlier AS()
+outlier AS(
 SELECT ordernumber, priceeach, (quantityordered - avg)/stddev AS z_score
 FROM cte
-WHERE abs (quantityordered-avg)/stddev >2)
+WHERE abs ((quantityordered-avg)/stddev) >2
+)
+SELECT 
+    ordernumber, 
+    priceeach, 
+    z_score
+FROM 
+    outlier
 
 
 --6,
-CREATE TABLE SALES_DATASET_RFM_PRJ_CLEAN 
-INSERT INTO SALES_DATASET_RFM_PRJ_CLEAN 
-SELECT * FROM SALES_DATASET_RFM_PRJ
-WHERE ordernumber NOT IN (SELECT ordernumber FROM outliers)
+CREATE TABLE SALES_DATASET_RFM_PRJ_CLEAN AS
+SELECT * 
+FROM SALES_DATASET_RFM_PRJ
+WHERE ordernumber NOT IN (
+SELECT ordernumber 
+FROM (
+SELECT ordernumber, 
+       priceeach, 
+       (quantityordered - avg) / stddev AS z_score
+        FROM (
+SELECT ordernumber, 
+priceeach, 
+quantityordered,
+(SELECT AVG(quantityordered) FROM SALES_DATASET_RFM_PRJ) AS avg,
+(SELECT STDDEV(quantityordered) FROM SALES_DATASET_RFM_PRJ) AS stddev
+ FROM SALES_DATASET_RFM_PRJ) AS cte
+ ) AS outlier
+ WHERE ABS(z_score) > 2
+);
+
 
 
 
